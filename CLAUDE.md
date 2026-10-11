@@ -25,6 +25,7 @@ WinCompositor：robbietilton/Compositor 的 Windows 移植：C# / .NET 8 / WPF /
 - 每完成并验收一项需求就提交一次，提交信息用中文写清做了什么。
 - 并行的子代理用 `isolation: "worktree"` 各自在独立副本里改，主管审查 diff 后合并；回退用 git，不手动删文件。
 - AI 模型（`models/**/*.onnx`）不进仓库，来源见 README 的“AI 模型”一节。
+- 远端：https://github.com/biubiu223/WinCompositor （公开）。发布一个版本：改 `Directory.Build.props` 的 `<Version>`（测试版用 `0.x.y-beta.n`）→ 构建、测试、`installer/build-installer.ps1` → 提交并打标签 `v<版本>` → `git push origin main` 和 `git push origin v<版本>` → `gh release create v<版本> dist/installer/WinCompositor-Setup-<版本>.exe --verify-tag --title ... --notes-file ...`（测试版加 `--prerelease`），发布说明里写上安装包的 SHA-256。发布前先问用户。
 - 提交信息含中文时，先写进 UTF-8 文件再 `git commit -F 文件`（Windows PowerShell 直接传参会乱码或出错）。
 
 ## 构建与测试
