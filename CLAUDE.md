@@ -19,6 +19,14 @@ WinCompositor：robbietilton/Compositor 的 Windows 移植：C# / .NET 8 / WPF /
 
 一两行就能改完的小改动（改文案、改个名字）主管可以直接做，省掉派任务的开销；用户要求全部派发时照办。
 
+## Git
+
+- 项目是 Git 仓库（`main` 分支），提交作者 `biubiu223 <340903687+biubiu223@users.noreply.github.com>`（只设在本仓库）。Git 在 `C:\Program Files\Git\cmd\git.exe`。
+- 每完成并验收一项需求就提交一次，提交信息用中文写清做了什么。
+- 并行的子代理用 `isolation: "worktree"` 各自在独立副本里改，主管审查 diff 后合并；回退用 git，不手动删文件。
+- AI 模型（`models/**/*.onnx`）不进仓库，来源见 README 的“AI 模型”一节。
+- 提交信息含中文时，先写进 UTF-8 文件再 `git commit -F 文件`（Windows PowerShell 直接传参会乱码或出错）。
+
 ## 构建与测试
 
 PowerShell 前缀（SDK 装在用户目录）：
