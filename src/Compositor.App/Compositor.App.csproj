@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- The Windows 10 target brings the system's own WinML (Windows.AI.MachineLearning), which runs the subject model
+         for Select Subject, Object Selection and Remove Background without any extra runtime. -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <WindowsSdkPackageVersion>10.0.19041.56</WindowsSdkPackageVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Compositor.App</RootNamespace>
+    <!-- WinCompositor: Compositor, for Windows. The code keeps its Compositor.* names; only the program is renamed. -->
+    <AssemblyName>WinCompositor</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\Compositor.ico</ApplicationIcon>
+    <Product>WinCompositor</Product>
+    <Description>WinCompositor — a Photoshop-style image editor for compositing, the Windows port of Compositor.</Description>
+    <!-- SkiaSharp.Views.WPF (and the OpenTK packages it brings for its GL control) only ship .NET Framework builds;
+         the WPF element used here works unchanged on .NET 8, so the compatibility notice is silenced. -->
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="3.119.4" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Compositor.Core\Compositor.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Compositor.ico" />
+  </ItemGroup>
+
+  <!-- The subject model (and its license) ships in a Models folder beside the program, outside the single-file bundle,
+       so WinML can open it in place. Builds without it still work: the app then offers to download it. -->
+  <ItemGroup Condition="Exists('..\..\models\isnet-general-use.onnx')">
+    <None Include="..\..\models\isnet-general-use.onnx" Link="Models\isnet-general-use.onnx"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="..\..\models\isnet-general-use.LICENSE.txt" Link="Models\isnet-general-use.LICENSE.txt"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+  <!-- Content-Aware Fill's neural reconstruction and the Remove tool (LaMa, Apache-2.0). -->
+  <ItemGroup Condition="Exists('..\..\models\lama_fp32.onnx')">
+    <None Include="..\..\models\lama_fp32.onnx" Link="Models\lama_fp32.onnx"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="..\..\models\lama_fp32.LICENSE.txt" Link="Models\lama_fp32.LICENSE.txt"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+  <!-- Content-Aware Fill's neural reconstruction when LaMa isn't there (MI-GAN, MIT). -->
+  <ItemGroup Condition="Exists('..\..\models\migan_pipeline_v2.onnx')">
+    <None Include="..\..\models\migan_pipeline_v2.onnx" Link="Models\migan_pipeline_v2.onnx"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="..\..\models\migan_pipeline_v2.LICENSE.txt" Link="Models\migan_pipeline_v2.LICENSE.txt"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+  <!-- Generative Fill (Stable Diffusion 1.5 Inpainting, CreativeML Open RAIL-M): UNet and VAE, plus the text encoder's
+       precomputed answer for the empty prompt in place of the text encoder itself. -->
+  <ItemGroup Condition="Exists('..\..\models\sd-inpainting\unet\model.onnx')">
+    <None Include="..\..\models\sd-inpainting\**\*" Link="Models\sd-inpainting\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+
+</Project>

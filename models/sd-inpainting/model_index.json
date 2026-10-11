@@ -1,0 +1,37 @@
+{
+  "_class_name": "OnnxStableDiffusionInpaintPipeline",
+  "_diffusers_version": "0.33.1",
+  "feature_extractor": [
+    "transformers",
+    "CLIPImageProcessor"
+  ],
+  "requires_safety_checker": true,
+  "safety_checker": [
+    "diffusers",
+    "OnnxRuntimeModel"
+  ],
+  "scheduler": [
+    "diffusers",
+    "DDIMScheduler"
+  ],
+  "text_encoder": [
+    "diffusers",
+    "OnnxRuntimeModel"
+  ],
+  "tokenizer": [
+    "transformers",
+    "CLIPTokenizer"
+  ],
+  "unet": [
+    "diffusers",
+    "OnnxRuntimeModel"
+  ],
+  "vae_decoder": [
+    "diffusers",
+    "OnnxRuntimeModel"
+  ],
+  "vae_encoder": [
+    "diffusers",
+    "OnnxRuntimeModel"
+  ]
+}

@@ -1,0 +1,13 @@
+# Text files are stored with LF and checked out with CRLF (a Windows project; Visual Studio, Inno Setup and Windows
+# PowerShell all expect CRLF).
+* text=auto eol=crlf
+
+# Binary, never touched.
+*.ico binary
+*.bmp binary
+*.png binary
+*.jpg binary
+*.bin binary
+*.onnx binary
+*.dng binary
+*.psd binary

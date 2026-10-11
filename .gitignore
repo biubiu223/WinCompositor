@@ -1,0 +1,14 @@
+bin/
+obj/
+dist/
+test-output/
+.vs/
+*.user
+*.suo
+TestResults/
+*.log
+
+# The AI models (2.2 GB) stay out of the repository: download them into models\ as README.md lists. Their licenses,
+# the small configuration files and the precomputed empty_prompt.bin (which comes from nowhere else) are kept.
+models/**/*.onnx
+models/**/*.onnx_data
