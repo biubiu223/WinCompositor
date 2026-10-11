@@ -17,7 +17,13 @@
 
 ## 运行
 
-**安装程序**：`dist\installer\WinCompositor-Setup-0.1.0.exe`（约 2.1 GB，单个文件）。中文或英文安装向导（按 Windows 显示语言自动选择），可以只为当前用户安装（不需要管理员权限）或为所有用户安装；可选是否安装 AI 生成模型（约 1.8 GB）；创建开始菜单 / 桌面快捷方式，带卸载程序。第一次安装时程序界面语言与安装向导一致。
+**安装程序**：`dist\installer\WinCompositor-Setup-0.1.0.exe`（约 78 MB，在线安装）。安装包里只有程序本身，AI 模型在安装时按选择从发布地址下载（GitHub、Hugging Face），每个文件都用 SHA-256 校验：
+- **推荐安装**（默认）：下载基础 AI 模型约 395 MB（选择主体、神经重建、抹除工具）
+- **完整安装**：另下载 AI 生成模型约 1.8 GB，共约 2.2 GB
+- **仅程序**：不下载模型，AI 功能不可用；以后再运行安装包选上模型即可补装
+- 已经装过的模型不会重复下载；某个模型下载失败时可以重试，或忽略后继续安装其余部分
+
+安装向导是中文或英文（按 Windows 显示语言自动选择），可以只为当前用户安装（不需要管理员权限）或为所有用户安装；创建开始菜单 / 桌面快捷方式，带卸载程序（下载的模型也会一并卸载）。第一次安装时程序界面语言与安装向导一致。
 
 **免安装**：编译好的程序在 `dist\WinCompositor\WinCompositor.exe`，AI 模型在旁边的 `Models\` 文件夹里（复制程序时要连同这个文件夹一起复制）。
 
@@ -61,7 +67,7 @@ dotnet publish src/Compositor.App -p:PublishProfile=win-x64
 powershell -ExecutionPolicy Bypass -File installer/build-installer.ps1
 ```
 
-它先发布到 `dist\WinCompositor\`，再把 `installer\WinCompositor.iss` 编译成 `dist\installer\WinCompositor-Setup-<版本>.exe`（版本号取自 `Directory.Build.props`）。安装向导的图片由 `installer\make-wizard-images.ps1` 从程序图标生成。
+它先发布到 `dist\WinCompositor\`，再把 `installer\WinCompositor.iss` 编译成 `dist\installer\WinCompositor-Setup-<版本>.exe`（版本号取自 `Directory.Build.props`）。制作安装包不需要本地有模型文件（模型的下载地址、大小和 SHA-256 写在 `WinCompositor.iss` 里；换模型时要一起更新）。安装向导的图片由 `installer\make-wizard-images.ps1` 从程序图标生成。
 
 ## 第一阶段完成的功能
 

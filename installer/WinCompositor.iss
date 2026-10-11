@@ -59,12 +59,9 @@ UninstallDisplayIcon={app}\{#AppExe}
 CloseApplications=yes
 RestartApplications=no
 
-; The models barely compress (they are already dense numbers), so fast LZMA2 per file: the setup is hardly bigger
-; than with maximum compression, builds in minutes, and leaving out the optional model skips its data quickly.
-Compression=lzma2/fast
-SolidCompression=no
-LZMAUseSeparateProcess=yes
-LZMANumBlockThreads=8
+; Only the program and some small files are inside now: the best compression costs little time.
+Compression=lzma2/max
+SolidCompression=yes
 OutputDir=..\dist\installer
 OutputBaseFilename=WinCompositor-Setup-{#AppVersion}
 
@@ -73,26 +70,33 @@ Name: "chs"; MessagesFile: "Languages\ChineseSimplified.isl"
 Name: "en"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-chs.TypeFull=完整安装（含 AI 生成模型，约 2.4 GB）
-en.TypeFull=Full installation (with the AI generation model, about 2.4 GB)
-chs.TypeCompact=精简安装（不含 AI 生成模型，约 0.5 GB）
-en.TypeCompact=Compact installation (without the AI generation model, about 0.5 GB)
+chs.TypeRecommended=推荐安装（下载基础 AI 模型，约 395 MB）
+en.TypeRecommended=Recommended installation (downloads the core AI models, about 395 MB)
+chs.TypeFull=完整安装（另下载 AI 生成模型，共约 2.2 GB）
+en.TypeFull=Full installation (also downloads the AI generation model, about 2.2 GB in all)
+chs.TypeCompact=仅程序（不下载模型，AI 功能不可用）
+en.TypeCompact=Program only (no models; the AI features stay unavailable)
 chs.TypeCustom=自定义安装
 en.TypeCustom=Custom installation
-chs.ComponentMain=Compositor 程序与基础 AI 模型（选择主体、神经重建、抹除工具）
-en.ComponentMain=Compositor and its core AI models (Select Subject, Neural Reconstruction, Remove Tool)
-chs.ComponentGenerate=AI 生成模型 Stable Diffusion 1.5 Inpainting（可选，占用显存较大）
-en.ComponentGenerate=AI generation model: Stable Diffusion 1.5 Inpainting (optional, uses a lot of graphics memory)
+chs.ComponentMain=WinCompositor 程序
+en.ComponentMain=The WinCompositor program
+chs.ComponentModels=基础 AI 模型：选择主体、神经重建、抹除工具（安装时下载）
+en.ComponentModels=Core AI models: Select Subject, Neural Reconstruction, Remove Tool (downloaded while installing)
+chs.ComponentGenerate=AI 生成模型 Stable Diffusion 1.5 Inpainting（可选，安装时下载，占用显存较大）
+en.ComponentGenerate=AI generation model: Stable Diffusion 1.5 Inpainting (optional, downloaded while installing; uses a lot of graphics memory)
 chs.ShortcutComment=面向合成与后期处理的图像编辑器
 en.ShortcutComment=An image editor for compositing and finishing
 
 [Types]
+; The first is the default: the program and the core models, not the 1.8 GB generation model.
+Name: "recommended"; Description: "{cm:TypeRecommended}"
 Name: "full"; Description: "{cm:TypeFull}"
 Name: "compact"; Description: "{cm:TypeCompact}"
 Name: "custom"; Description: "{cm:TypeCustom}"; Flags: iscustom
 
 [Components]
-Name: "main"; Description: "{cm:ComponentMain}"; Types: full compact custom; Flags: fixed
+Name: "main"; Description: "{cm:ComponentMain}"; Types: recommended full compact custom; Flags: fixed
+Name: "models"; Description: "{cm:ComponentModels}"; Types: recommended full custom
 Name: "generate"; Description: "{cm:ComponentGenerate}"; Types: full
 
 [Tasks]
@@ -100,16 +104,54 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{#Dist}\{#AppExe}"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "{#Dist}\Models\*"; Excludes: "sd-inpainting"; DestDir: "{app}\Models"; Components: main; Flags: ignoreversion recursesubdirs
-Source: "{#Dist}\Models\sd-inpainting\*"; DestDir: "{app}\Models\sd-inpainting"; Components: generate; Flags: ignoreversion recursesubdirs
 Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Components: main; Flags: ignoreversion
+
+; What comes with the models but isn't downloaded: their licenses, the generation model's settings, and the text
+; encoder's precomputed answer for the empty prompt (empty_prompt.bin), which is published nowhere else.
+Source: "..\models\isnet-general-use.LICENSE.txt"; DestDir: "{app}\Models"; Components: models; Flags: ignoreversion
+Source: "..\models\lama_fp32.LICENSE.txt"; DestDir: "{app}\Models"; Components: models; Flags: ignoreversion
+Source: "..\models\migan_pipeline_v2.LICENSE.txt"; DestDir: "{app}\Models"; Components: models; Flags: ignoreversion
+Source: "..\models\sd-inpainting\*"; Excludes: "*.onnx,*.onnx_data"; DestDir: "{app}\Models\sd-inpainting"; Components: generate; Flags: ignoreversion recursesubdirs
+
+; The models, downloaded while installing from where each is published and checked against its SHA-256 (sizes and
+; hashes are those of the files the program was built and tested with). One an earlier installation already has isn't
+; fetched again (onlyifdoesntexist; a Check function instead would hide the download sizes from the Components page).
+; A failed download shows Setup's usual Retry / Ignore choice; Ignore installs everything else, and running Setup
+; again later fetches what's missing.
+Source: "https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx"; \
+  DestName: "isnet-general-use.onnx"; DestDir: "{app}\Models"; Components: models; \
+  Hash: "60920e99c45464f2ba57bee2ad08c919a52bbf852739e96947fbb4358c0d964a"; ExternalSize: 178648008; \
+  Flags: external download ignoreversion onlyifdoesntexist
+Source: "https://huggingface.co/Carve/LaMa-ONNX/resolve/main/lama_fp32.onnx"; \
+  DestName: "lama_fp32.onnx"; DestDir: "{app}\Models"; Components: models; \
+  Hash: "1faef5301d78db7dda502fe59966957ec4b79dd64e16f03ed96913c7a4eb68d6"; ExternalSize: 208044816; \
+  Flags: external download ignoreversion onlyifdoesntexist
+Source: "https://huggingface.co/andraniksargsyan/migan/resolve/main/migan_pipeline_v2.onnx"; \
+  DestName: "migan_pipeline_v2.onnx"; DestDir: "{app}\Models"; Components: models; \
+  Hash: "6f1f3530a1a2324b19752018ce756088b07973cda8d7d890034ace5c8a48c40b"; ExternalSize: 28079181; \
+  Flags: external download ignoreversion onlyifdoesntexist
+Source: "https://huggingface.co/RanaLLC/stable-diffusion-v1-5-inpainting-onnx-fp16/resolve/main/unet/model.onnx"; \
+  DestName: "model.onnx"; DestDir: "{app}\Models\sd-inpainting\unet"; Components: generate; \
+  Hash: "a3726e1944ec2fbc9596096cd001520aea789367f329360ee34eb520c751de16"; ExternalSize: 1720173976; \
+  Flags: external download ignoreversion onlyifdoesntexist
+Source: "https://huggingface.co/RanaLLC/stable-diffusion-v1-5-inpainting-onnx-fp16/resolve/main/vae_encoder/model.onnx"; \
+  DestName: "model.onnx"; DestDir: "{app}\Models\sd-inpainting\vae_encoder"; Components: generate; \
+  Hash: "f0da9070d007def0d6a4e7c10a21462bb6172e460ef2587c3fe91191397b4cea"; ExternalSize: 68430178; \
+  Flags: external download ignoreversion onlyifdoesntexist
+Source: "https://huggingface.co/RanaLLC/stable-diffusion-v1-5-inpainting-onnx-fp16/resolve/main/vae_decoder/model.onnx"; \
+  DestName: "model.onnx"; DestDir: "{app}\Models\sd-inpainting\vae_decoder"; Components: generate; \
+  Hash: "ce0ffca3fcfd0a2729a88d8d90dabf35c66d237404997e0461d52e46ac7a91bc"; ExternalSize: 99093889; \
+  Flags: external download ignoreversion onlyifdoesntexist
 
 [InstallDelete]
 ; Upgrading an installation from before the rename (same AppId, same folder): the old program and its shortcuts go.
 Type: files; Name: "{app}\Compositor.exe"
 Type: files; Name: "{autoprograms}\Compositor.lnk"
 Type: files; Name: "{autodesktop}\Compositor.lnk"
-; Choosing the compact install over a full one takes the generation model away again.
+; Models left out on the Components page go, when an earlier installation had them.
+Type: files; Name: "{app}\Models\isnet-general-use.onnx"; Components: not models
+Type: files; Name: "{app}\Models\lama_fp32.onnx"; Components: not models
+Type: files; Name: "{app}\Models\migan_pipeline_v2.onnx"; Components: not models
 Type: filesandordirs; Name: "{app}\Models\sd-inpainting"; Components: not generate
 
 [Icons]
