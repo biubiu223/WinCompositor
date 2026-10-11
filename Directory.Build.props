@@ -8,6 +8,9 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <Company>WinCompositor</Company>
     <Product>WinCompositor</Product>
-    <Version>0.1.0</Version>
+    <!-- The release's version (a pre-release suffix like -beta.1 shows in About and in the installer's name). The
+         informational version stays exactly this, without the source revision the SDK would append. -->
+    <Version>0.1.0-beta.1</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 </Project>

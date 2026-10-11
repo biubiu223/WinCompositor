@@ -29,6 +29,7 @@ $iscc = @(
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $iscc) { throw "Inno Setup 6 (ISCC.exe) not found. Install it from https://jrsoftware.org/isdl.php" }
 
-& $iscc /Qp "/DAppVersion=$version" (Join-Path $root "installer\WinCompositor.iss")
+$number = ($version -split '-')[0]
+& $iscc /Qp "/DAppVersion=$version" "/DAppVersionNumber=$number" (Join-Path $root "installer\WinCompositor.iss")
 if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed." }
 Get-Item (Join-Path $root "dist\installer\WinCompositor-Setup-$version.exe") | Select-Object FullName, @{ n = "MB"; e = { [math]::Round($_.Length / 1MB) } }

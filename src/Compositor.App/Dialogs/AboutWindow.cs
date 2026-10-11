@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -330,10 +331,23 @@ public sealed class AboutWindow : Window
     }
 
     /// <summary>The program's version as people say it: 0.1, or 0.1.2 once there's a third part.</summary>
+    /// <summary>
+    /// The version as people read it: "0.1 Beta 1" for 0.1.0-beta.1 (from the informational version, which keeps the
+    /// pre-release part the numeric assembly version drops), "0.1.2" for 0.1.2.
+    /// </summary>
     private static string ShortVersion()
     {
-        var version = typeof(AboutWindow).Assembly.GetName().Version;
-        if (version is null) return "";
-        return version.Build > 0 ? $"{version.Major}.{version.Minor}.{version.Build}" : $"{version.Major}.{version.Minor}";
+        var assembly = typeof(AboutWindow).Assembly;
+        var full = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                   ?? assembly.GetName().Version?.ToString() ?? "";
+        full = full.Split('+')[0];
+        var parts = full.Split('-', 2);
+        if (!Version.TryParse(parts[0], out var version)) return full;
+        var number = version.Build > 0 ? $"{version.Major}.{version.Minor}.{version.Build}" : $"{version.Major}.{version.Minor}";
+        if (parts.Length < 2) return number;
+        // "beta.1" → "Beta 1", "rc.2" → "RC 2".
+        var label = parts[1].Split('.', 2);
+        var stage = label[0].Length <= 2 ? label[0].ToUpperInvariant() : char.ToUpperInvariant(label[0][0]) + label[0][1..];
+        return label.Length > 1 ? $"{number} {stage} {label[1]}" : $"{number} {stage}";
     }
 }

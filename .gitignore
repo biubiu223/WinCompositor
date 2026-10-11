@@ -12,3 +12,6 @@ TestResults/
 # the small configuration files and the precomputed empty_prompt.bin (which comes from nowhere else) are kept.
 models/**/*.onnx
 models/**/*.onnx_data
+
+# This machine's notes for Claude (see CLAUDE.md)
+CLAUDE.local.md

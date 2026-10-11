@@ -47,7 +47,7 @@ $env:DOTNET_ROOT="$env:LOCALAPPDATA\Microsoft\dotnet"; $env:PATH="$env:DOTNET_RO
 
 - **下载任何文件或新增 NuGet 包前，先问用户**（说明文件名、来源、大小）。子代理一律不下载、不装包，需要时回报主管。
 - **不永久删除文件**：要删的移到回收站（`Microsoft.VisualBasic.FileIO.FileSystem` 的 `SendToRecycleBin`），并告诉用户可以清空。
-- 不结束、不修改用户自己的进程，只动自己启动的 WinCompositor 测试实例。
+- 不结束、不修改用户自己的进程，只动自己启动的 WinCompositor 测试实例。本机的具体情况（常开的程序、工具位置）写在 `CLAUDE.local.md`，不进仓库。
 - 名称：程序、窗口、安装包对外叫 **WinCompositor**；代码里的项目和命名空间仍叫 `Compositor.*`，设置文件夹仍是 `%APPDATA%\Compositor`（升级不丢设置），`.comp` 项目格式仍叫“Compositor 项目”（与 Mac 版通用），关于窗口保留对原版的署名。
 - 不把用户邮箱发往任何地方。
 - 界面文字中英双语：一律写成 `L.T("中文", "English")`，规则与词汇表见 [docs/localization.md](docs/localization.md)（新加的界面文字也必须这样写）；代码注释用英文，沿用现有风格（说明“为什么”）。

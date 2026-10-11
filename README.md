@@ -2,6 +2,8 @@
 
 **WinCompositor** = Compositor for Windows：名字前面的 Win 表示它是 Windows 版。
 
+**下载**：[Releases](https://github.com/biubiu223/WinCompositor/releases)。当前版本 **0.1.0-beta.1**（测试版）。
+
 [Compositor](https://github.com/robbietilton/Compositor) 是 Robbie Tilton 为 macOS 写的一款面向合成与后期处理的类 Photoshop 图像编辑器（Swift / SwiftUI / Metal，MIT 许可证）。本项目把它移植到 Windows。
 
 原版依赖的 SwiftUI、AppKit、Metal、Core Graphics、Core Image 在 Windows 上都不存在，所以这是一次**按原版源码逐个功能重写**的移植，而不是重新编译：

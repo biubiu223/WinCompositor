@@ -8,6 +8,10 @@
 #ifndef AppVersion
   #define AppVersion "0.1.0"
 #endif
+; The numbers alone (0.1.0 for 0.1.0-beta.1): Windows' file version can't carry a pre-release label.
+#ifndef AppVersionNumber
+  #define AppVersionNumber AppVersion
+#endif
 #define AppName "WinCompositor"
 #define AppExe "WinCompositor.exe"
 #define Dist "..\dist\WinCompositor"
@@ -20,7 +24,8 @@ AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
 AppPublisher=Compositor for Windows
 AppCopyright=MIT License · Original © 2026 Wonder Assembly LLC
-VersionInfoVersion={#AppVersion}
+VersionInfoVersion={#AppVersionNumber}
+VersionInfoProductTextVersion={#AppVersion}
 VersionInfoDescription={#AppName} Setup
 
 ; Per-user by default (no administrator needed, installs to %LOCALAPPDATA%\Programs\Compositor); the first page
